@@ -17,6 +17,8 @@ import NotificationsIcon from "@material-ui/icons/Notifications";
 import { MainListItems } from "./listItems";
 import SimpleLineChart from "./SimpleLineChart";
 import SimpleTable from "./SimpleTable";
+import Courier from "./Courier";
+import Client from "./Client";
 
 const drawerWidth = 240;
 
@@ -135,6 +137,7 @@ class Dashboard extends React.Component {
       content = (
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
+          <Client />
         </main>
       );
       title = "Client";
@@ -142,6 +145,7 @@ class Dashboard extends React.Component {
       content = (
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
+          <Courier />
         </main>
       );
       title = "Courier";
