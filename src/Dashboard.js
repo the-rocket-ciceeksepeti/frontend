@@ -14,7 +14,7 @@ import Badge from "@material-ui/core/Badge";
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import NotificationsIcon from "@material-ui/icons/Notifications";
-import { mainListItems, secondaryListItems } from "./listItems";
+import { MainListItems } from "./listItems";
 import SimpleLineChart from "./SimpleLineChart";
 import SimpleTable from "./SimpleTable";
 
@@ -99,7 +99,22 @@ const styles = theme => ({
 
 class Dashboard extends React.Component {
   state = {
-    open: true
+    open: true,
+    onDashboard: true,
+    onClient: false,
+    onCourier: false
+  };
+
+  onDashboard = () => {
+    this.setState({ onDashboard: true, onClient: false, onCourier: false });
+  };
+
+  onClient = () => {
+    this.setState({ onDashboard: false, onClient: true, onCourier: false });
+  };
+
+  onCourier = () => {
+    this.setState({ onDashboard: false, onClient: false, onCourier: true });
   };
 
   handleDrawerOpen = () => {
@@ -112,6 +127,44 @@ class Dashboard extends React.Component {
 
   render() {
     const { classes } = this.props;
+    const { onClient, onDashboard, onCourier } = this.state;
+
+    let content = null;
+    let title = "Dashboard";
+    if (onClient) {
+      content = (
+        <main className={classes.content}>
+          <div className={classes.appBarSpacer} />
+        </main>
+      );
+      title = "Client";
+    } else if (onCourier) {
+      content = (
+        <main className={classes.content}>
+          <div className={classes.appBarSpacer} />
+        </main>
+      );
+      title = "Courier";
+    } else {
+      content = (
+        <main className={classes.content}>
+          <div className={classes.appBarSpacer} />
+          <Typography variant="h4" gutterBottom component="h2">
+            Orders
+          </Typography>
+          <Typography component="div" className={classes.chartContainer}>
+            <SimpleLineChart />
+          </Typography>
+          <Typography variant="h4" gutterBottom component="h2">
+            Products
+          </Typography>
+          <div className={classes.tableContainer}>
+            <SimpleTable />
+          </div>
+        </main>
+      );
+      title = "Dashboard";
+    }
 
     return (
       <div className={classes.root}>
@@ -145,7 +198,7 @@ class Dashboard extends React.Component {
               noWrap
               className={classes.title}
             >
-              Dashboard
+              {title}
             </Typography>
             <IconButton color="inherit">
               <Badge badgeContent={4} color="secondary">
@@ -170,23 +223,15 @@ class Dashboard extends React.Component {
             </IconButton>
           </div>
           <Divider />
-          <List>{mainListItems}</List>
+          <List>
+            <MainListItems
+              onDashboard={this.onDashboard}
+              onClient={this.onClient}
+              onCourier={this.onCourier}
+            />
+          </List>
         </Drawer>
-        <main className={classes.content}>
-          <div className={classes.appBarSpacer} />
-          <Typography variant="h4" gutterBottom component="h2">
-            Orders
-          </Typography>
-          <Typography component="div" className={classes.chartContainer}>
-            <SimpleLineChart />
-          </Typography>
-          <Typography variant="h4" gutterBottom component="h2">
-            Products
-          </Typography>
-          <div className={classes.tableContainer}>
-            <SimpleTable />
-          </div>
-        </main>
+        {content}
       </div>
     );
   }
