@@ -136,7 +136,7 @@ class Dashboard extends React.Component {
     clientRejected: false,
     initialDate: new Date(),
     date: new Date(),
-    status: false
+    status: 0
   };
 
   async tick() {
@@ -153,7 +153,7 @@ class Dashboard extends React.Component {
   }
 
   componentDidMount() {
-    this.interval = setInterval(() => this.tick(), 500);
+    this.interval = setInterval(() => this.tick(), 1000);
   }
 
   componentWillUnmount() {
@@ -189,7 +189,8 @@ class Dashboard extends React.Component {
   };
 
   onClientRejected = () => {
-    this.setState({ clientRejected: true });
+    this.setState({ clientRejected: true, status: 2 });
+    clearInterval(this.interval);
   };
 
   handleSave = files => {
@@ -208,7 +209,7 @@ class Dashboard extends React.Component {
 
   onDelivered = () => {
     this.setState({
-      status: true
+      status: 1
     });
     clearInterval(this.interval);
     this.createNotification("success");
@@ -265,6 +266,7 @@ class Dashboard extends React.Component {
       tempMean /= data.length;
       humMean /= data.length;
       probOfDamage = (tempMean + humMean) / 5;
+      probOfDamage = (probOfDamage && probOfDamage.toFixed(2)) || 0;
     } catch (e) {}
 
     if (onClient) {
@@ -313,6 +315,13 @@ class Dashboard extends React.Component {
     const timeDiff = this.state.date - this.state.initialDate;
     const mins = parseInt(timeDiff / 60000) % 24;
     const secs = parseInt(timeDiff / 1000) % 60;
+
+    const statusTitle =
+      this.state.status === 1
+        ? "Delivered"
+        : this.state.status === 2
+        ? "Should be Returned"
+        : "On the Way";
 
     return (
       <div className={classes.root}>
@@ -431,7 +440,7 @@ class Dashboard extends React.Component {
               Status
             </Typography>
             <Typography style={{ marginRight: 50 }} variant="h5" component="h3">
-              {this.state.status ? "Delivered" : "On the way"}
+              {statusTitle}
             </Typography>
           </Paper>
           <Typography variant="h4" gutterBottom component="h2">

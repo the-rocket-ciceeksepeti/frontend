@@ -59,7 +59,7 @@ export class MapContainer extends Component {
           style={mapStyles}
           initialCenter={{
             lng: Number(28.88915), // lovely place
-            lat: Number(41.020115)
+            lat: Number(41.019115)
           }}
         >
           {data.length &&
