@@ -21,18 +21,24 @@ const data = [
 export function SimpleLineChart(props) {
   return (
     // 99% per https://github.com/recharts/recharts/issues/172
-    <ResponsiveContainer width="85%" height={320}>
+    <ResponsiveContainer width="95%" height={320}>
       <LineChart data={props.data}>
         <XAxis dataKey={"timestamp"} />
         <YAxis />
         <CartesianGrid vertical={false} strokeDasharray="3 3" />
         <Tooltip />
         <Legend />
-        <Line type="monotone" dataKey="temperature" stroke="#82ca9d" />
+        <Line
+          type="monotone"
+          dataKey="temperature"
+          stroke="#82ca9d"
+          strokeWidth="3"
+        />
         <Line
           type="monotone"
           dataKey="humidity"
           stroke="#8884d8"
+          strokeWidth="3"
           activeDot={{ r: 8 }}
         />
       </LineChart>

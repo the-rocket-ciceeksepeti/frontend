@@ -28,6 +28,7 @@ import "react-notifications/lib/notifications.css";
 import axios from "axios";
 import "./App.css";
 import Paper from "@material-ui/core/Paper";
+import MapContainer from "./MapContainer";
 
 const drawerWidth = 240;
 
@@ -40,10 +41,13 @@ const styles = theme => ({
     paddingBottom: theme.spacing.unit * 2,
     marginBottom: 20,
     alignItems: "center",
-    display: "flex"
+    display: "flex",
+    backgroundColor: "orange"
   },
   root: {
-    display: "flex"
+    display: "flex",
+    backgroundColor: "#cbcdcc",
+    height: "100%"
   },
   toolbar: {
     paddingRight: 24 // keep right padding when drawer closed
@@ -104,8 +108,7 @@ const styles = theme => ({
   content: {
     flexGrow: 1,
     padding: theme.spacing.unit * 3,
-    height: "100vh",
-    overflow: "auto"
+    overflow: "scroll"
   },
   chartContainer: {
     marginLeft: -22
@@ -132,7 +135,8 @@ class Dashboard extends React.Component {
     clientApproved: false,
     clientRejected: false,
     initialDate: new Date(),
-    date: new Date()
+    date: new Date(),
+    status: false
   };
 
   async tick() {
@@ -149,7 +153,7 @@ class Dashboard extends React.Component {
   }
 
   componentDidMount() {
-    this.interval = setInterval(() => this.tick(), 1000);
+    this.interval = setInterval(() => this.tick(), 500);
   }
 
   componentWillUnmount() {
@@ -200,6 +204,41 @@ class Dashboard extends React.Component {
     this.setState({
       photoUpload: false
     });
+  };
+
+  onDelivered = () => {
+    this.setState({
+      status: true
+    });
+    clearInterval(this.interval);
+    this.createNotification("success");
+  };
+
+  createNotification = type => {
+    switch (type) {
+      case "info":
+        NotificationManager.info(
+          "Client Requested to Open and Check the Package",
+          "",
+          500000
+        );
+        break;
+      case "success":
+        NotificationManager.success("Package Delivered!", "", 500000);
+        break;
+      case "warning":
+        NotificationManager.warning(
+          "Client Requested to Open and Check the Package",
+          "",
+          500000
+        );
+        break;
+      case "error":
+        NotificationManager.error("Client Rejected", "", 500000);
+        break;
+      default:
+        break;
+    }
   };
 
   render() {
@@ -272,8 +311,8 @@ class Dashboard extends React.Component {
     );
 
     const timeDiff = this.state.date - this.state.initialDate;
-    const mins = parseInt(timeDiff / 60000);
-    const secs = parseInt(timeDiff / 1000);
+    const mins = parseInt(timeDiff / 60000) % 24;
+    const secs = parseInt(timeDiff / 1000) % 60;
 
     return (
       <div className={classes.root}>
@@ -388,6 +427,12 @@ class Dashboard extends React.Component {
             <Typography style={{ marginRight: 50 }} variant="h5" component="h3">
               {mins + ":" + secs + "s"}
             </Typography>
+            <Typography style={{ marginRight: 5 }} variant="h6" component="h4">
+              Status
+            </Typography>
+            <Typography style={{ marginRight: 50 }} variant="h5" component="h3">
+              {this.state.status ? "Delivered" : "On the way"}
+            </Typography>
           </Paper>
           <Typography variant="h4" gutterBottom component="h2">
             Temperature / Humidity
@@ -396,6 +441,22 @@ class Dashboard extends React.Component {
             <SimpleLineChart data={data} />
           </Typography>
           {content}
+          <Typography
+            style={{ marginTop: 20 }}
+            variant="h4"
+            gutterBottom
+            component="h2"
+          >
+            Track Package
+          </Typography>
+          <Typography component="div">
+            <MapContainer
+              data={this.state.data}
+              style={{ margin: 20, height: 100 }}
+              onDelivered={this.onDelivered}
+              status={this.state.status}
+            />
+          </Typography>
         </main>
         <NotificationContainer />
       </div>
